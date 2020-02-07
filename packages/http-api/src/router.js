@@ -1,5 +1,5 @@
 const Router = require('koa-router')
-const Repo = require('./repo')
+const Repo = require('la-boite')
 const { serializedListOfBranches, serializedListOfFiles } = require('./serializers')
 const SseStream = require('ssestream')
 

@@ -4,7 +4,7 @@ const Git = require('nodegit')
 module.exports = class Repo {
   constructor() {
     const repoName = 'repository'
-    this._openRepository = () => Git.Repository.open(path.resolve(repoName))
+    this._openRepository = () => Git.Repository.open(path.resolve(__dirname, repoName))
   }
 
   async getBranches() {
