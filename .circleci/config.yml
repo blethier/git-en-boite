@@ -28,7 +28,7 @@ jobs:
       - checkout
       - docker/check
       - docker/build:
-          image: smartbear/git-en-boite:latest
+          image: smartbear/git-en-boite
           path: packages/la-boite
       - run: 
           name: Run tests in container
