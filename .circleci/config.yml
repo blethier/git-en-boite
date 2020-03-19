@@ -22,23 +22,21 @@ jobs:
             - run: cd packages/la-boite && yarn run lint
             - run: cd packages/la-boite && yarn test
 
-  build-container:
-    executor: docker/docker
-    steps:
-      - setup_remote_docker
-      - checkout
-      - docker/check
-      - docker/build:
+workflows:
+  version: 2.1
+  build:
+    jobs:
+      - test-in-node
+      - docker/publish:
           image: smartbear/git-en-boite
           path: packages/la-boite
           tag: latest
-      - run: 
-          name: Run tests in container
-          command: docker run -ti smartbear/git-en-boite:latest yarn test
-
-workflows:
-  version: 2.1
-  build-and-test:
-    jobs:
-      - test-in-node
-      - build-container
+          after_build:
+            - run: 
+                name: Run tests in container
+                command: docker run -ti smartbear/git-en-boite:latest yarn test
+          requires:
+            - test-in-node
+          filters:
+            branches:
+              only: run-tests-in-container
