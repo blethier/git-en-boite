@@ -1,6 +1,7 @@
 version: 2.1
 orbs:
   node: circleci/node@1.1.6
+  docker: circleci/docker@1.0.0
 executors:
   docker-host:
     environment:
@@ -21,33 +22,17 @@ jobs:
             - run: cd packages/la-boite && yarn test
 
   build-container:
-    executor: docker-host
+    executor: docker/docker
     steps:
-      - checkout
       - setup_remote_docker
-      - run:
-          name: Build Docker image
-          command: docker build -t $IMAGE:latest packages/la-boite
+      - checkout
+      - docker/check
+      - docker/build:
+          image: smartbear/git-en-boite:latest
+          path: packages/la-boite
       - run: 
           name: Run tests in container
-          command: docker run -ti $IMAGE:latest yarn test
-      - run:
-          name: Archive Docker image
-          command: docker save -o image.tar $IMAGE
-      - persist_to_workspace:
-          root: .
-          paths:
-            - ./image.tar
-  test-in-container:
-    executor: docker-host
-    steps:
-      - setup_remote_docker
-      - attach_workspace:
-          at: /tmp/workspace
-      - run:
-          name: Load archived Docker image
-          command: docker load -i /tmp/workspace/image.tar
-      - run: docker run -ti $IMAGE:latest yarn test
+          command: docker run -ti smartbear/git-en-boite:latest yarn test
 
 workflows:
   version: 2.1
@@ -55,6 +40,3 @@ workflows:
     jobs:
       - test-in-node
       - build-container
-      - test-in-container:
-          requires:
-            - build-container
