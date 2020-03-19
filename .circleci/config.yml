@@ -1,19 +1,27 @@
 version: 2.1
-orbs:
-  node: circleci/node@1.1.6
 jobs:
-  build-and-test:
-    executor:
-      name: node/default
+  build:
+    docker:
+      - image: circleci/buildpack-deps:stretch
     steps:
       - checkout
-      - node/with-cache:
-          steps:
-            - run: cd packages/la-boite && npm install
-            - run: cd packages/la-boite && ./node_modules/.bin/tsc
-            - run: cd packages/la-boite && npm run lint
-            - run: cd packages/la-boite && npm test
+      - setup_remote_docker
+      - run:
+          name: Build Docker image
+          command: docker build -t smartbear/git-en-boite:latest .
+  test:
+    docker:
+      - image: circleci/buildpack-deps:stretch
+    steps:
+      - setup_remote_docker
+      - run: docker run -ti smartbear/git-en-boite:latest yarn lint # TODO: move this into Dockerfile
+      - run: docker run -ti smartbear/git-en-boite:latest yarn test
+
 workflows:
-    build-and-test:
-      jobs:
-        - build-and-test
+  version: 2.1
+  build-and-test:
+    jobs:
+      - build
+      - test:
+          requires:
+            - build
