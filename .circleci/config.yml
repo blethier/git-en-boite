@@ -15,6 +15,7 @@ jobs:
     steps:
       - checkout
       - node/with-cache:
+          dir: packages/la-boite
           steps:
             - run: cd packages/la-boite && yarn
             - run: cd packages/la-boite && ./node_modules/.bin/tsc
