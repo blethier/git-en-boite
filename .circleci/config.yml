@@ -14,6 +14,9 @@ jobs:
       - run:
           name: Build Docker image
           command: docker build -t $IMAGE:latest packages/la-boite
+      - run: 
+          name: Run tests in container
+          command: docker run -ti $IMAGE:latest yarn test
       - run:
           name: Archive Docker image
           command: docker save -o image.tar $IMAGE
