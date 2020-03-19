@@ -1,4 +1,6 @@
 version: 2.1
+orbs:
+  node: circleci/node@1.1.6
 executors:
   docker-host:
     environment:
@@ -6,7 +8,19 @@ executors:
     docker:
       - image: circleci/buildpack-deps:stretch
 jobs:
-  build:
+  test-in-node:
+    executor:
+      name: node/default
+    steps:
+      - checkout
+      - node/with-cache:
+          steps:
+            - run: cd packages/la-boite && yarn
+            - run: cd packages/la-boite && ./node_modules/.bin/tsc
+            - run: cd packages/la-boite && yarn run lint
+            - run: cd packages/la-boite && yarn test
+
+  build-container:
     executor: docker-host
     steps:
       - checkout
@@ -24,7 +38,7 @@ jobs:
           root: .
           paths:
             - ./image.tar
-  test:
+  test-in-container:
     executor: docker-host
     steps:
       - setup_remote_docker
@@ -39,7 +53,8 @@ workflows:
   version: 2.1
   build-and-test:
     jobs:
-      - build
-      - test:
+      - test-in-node
+      - build-container
+      - test-in-container:
           requires:
-            - build
+            - build-container
