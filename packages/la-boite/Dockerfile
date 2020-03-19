@@ -10,6 +10,7 @@ COPY tsconfig.json .
 COPY src src
 COPY features features
 RUN node_modules/.bin/tsc
+RUN yarn lint
 
 EXPOSE 3001
 CMD [ "yarn", "start" ]

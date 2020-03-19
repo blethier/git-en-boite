@@ -30,7 +30,6 @@ jobs:
       - run:
           name: Load archived Docker image
           command: docker load -i /tmp/workspace/image.tar
-      - run: docker run -ti $IMAGE:latest yarn lint # TODO: move this into Dockerfile
       - run: docker run -ti $IMAGE:latest yarn test
 
 workflows:
