@@ -1,13 +1,9 @@
 version: 2.1
+
 orbs:
   node: circleci/node@1.1.6
   docker: circleci/docker@1.0.0
-executors:
-  docker-host:
-    environment:
-      IMAGE: smartbear/git-en-boite
-    docker:
-      - image: circleci/buildpack-deps:stretch
+
 jobs:
   test-in-node:
     executor:
@@ -35,8 +31,6 @@ workflows:
             - run: 
                 name: Run tests in container
                 command: docker run -ti smartbear/git-en-boite:latest yarn test
-          requires:
-            - test-in-node
           filters:
             branches:
               only: run-tests-in-container
