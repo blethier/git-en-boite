@@ -30,6 +30,7 @@ jobs:
       - docker/build:
           image: smartbear/git-en-boite
           path: packages/la-boite
+          tag: latest
       - run: 
           name: Run tests in container
           command: docker run -ti smartbear/git-en-boite:latest yarn test
