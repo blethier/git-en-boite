@@ -19,6 +19,7 @@ jobs:
       - run: sudo apt install -y postgresql-client
       - node/install-packages:
           app-dir: packages/la-boite
+          cache-key: yarn.lock
           pkg-manager: yarn
           with-cache: true
       - run: cd packages/la-boite && ./node_modules/.bin/tsc
