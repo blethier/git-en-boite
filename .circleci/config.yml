@@ -22,7 +22,10 @@ jobs:
           cache-key: yarn.lock
           pkg-manager: yarn
           with-cache: true
-      - run: cd packages/la-boite && ./node_modules/.bin/tsc
+      - run:
+          name: Compile Typescript
+          command: npx tsc
+          working_directory: packages/la-boite
       - run: cd packages/la-boite && yarn run lint
       - run: cd packages/la-boite && yarn test
 
