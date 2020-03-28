@@ -10,6 +10,8 @@ jobs:
       name: node/default
     steps:
       - checkout
+      - run: sudo apt-get update
+      - run: sudo apt-get install postgresql-11
       - node/with-cache:
           dir: ~/project/packages/la-boite/node_modules
           steps:
