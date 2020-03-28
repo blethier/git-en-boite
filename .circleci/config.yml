@@ -16,22 +16,21 @@ jobs:
           POSTGRES_DB: git-en-boite-test
     steps:
       - checkout
-      - run: sudo apt install -y postgresql-client
       - node/install-packages:
           app-dir: packages/la-boite
           cache-key: yarn.lock
           pkg-manager: yarn
           with-cache: true
       - run:
-          name: Compile Typescript
+          name: Compiling Typescript
           command: npx tsc
           working_directory: packages/la-boite
       - run:
-          name: Lint Typescript
+          name: Linting Typescript
           command: yarn run lint
           working_directory: packages/la-boite
       - run:
-          name: Run tests
+          name: Running tests
           command: ./bin/test
           working_directory: packages/la-boite
 
