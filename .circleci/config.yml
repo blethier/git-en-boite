@@ -16,7 +16,7 @@ jobs:
           POSTGRES_DB: git-en-boite-test
     steps:
       - checkout
-      - run: apt install -y postgresql-client
+      - run: sudo apt install -y postgresql-client
       - node/install-packages:
           app-dir: packages/la-boite
           pkg-manager: yarn
