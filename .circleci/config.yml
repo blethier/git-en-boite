@@ -47,8 +47,9 @@ workflows:
             - run: 
                 name: Running tests in container
                 command:
-                  docker run -ti smartbear/git-en-boite:latest \
+                  docker run -t -i \
                     -e GIT_EN_BOITE_PG_URL=postgres://root@localhost/git-en-boite-test \
+                    smartbear/git-en-boite:latest \
                     yarn test
           filters:
             branches:
