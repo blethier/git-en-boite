@@ -6,19 +6,27 @@ orbs:
 
 jobs:
   test-in-node:
+    docker:
+      - image: circleci/postgres:9.6.2-alpine
+        environment:
+          POSTGRES_USER: root
+          POSTGRES_DB: git-en-boite-test
     executor:
       name: node/default
     steps:
       - checkout
-      - run: sudo apt-get update
-      - run: sudo apt-get install postgresql-11
+      - run: sudo apt install -y postgresql-client
       - node/with-cache:
           dir: ~/project/packages/la-boite/node_modules
           steps:
             - run: cd packages/la-boite && yarn
             - run: cd packages/la-boite && ./node_modules/.bin/tsc
             - run: cd packages/la-boite && yarn run lint
-            - run: cd packages/la-boite && yarn test
+            - run: 
+                name: Run tests
+                command: cd packages/la-boite && yarn test
+                environment:
+                  GIT_EN_BOITE_PG_URL: postgres://root@localhost/git-en-boite-test
 
 workflows:
   version: 2.1
