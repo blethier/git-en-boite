@@ -26,8 +26,14 @@ jobs:
           name: Compile Typescript
           command: npx tsc
           working_directory: packages/la-boite
-      - run: cd packages/la-boite && yarn run lint
-      - run: cd packages/la-boite && yarn test
+      - run:
+          name: Lint Typescript
+          command: yarn run lint
+          working_directory: packages/la-boite
+      - run:
+          name: Run tests
+          command: ./bin/test
+          working_directory: packages/la-boite
 
 workflows:
   version: 2.1
