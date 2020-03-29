@@ -43,10 +43,13 @@ workflows:
           image: smartbear/git-en-boite
           path: packages/la-boite
           tag: latest
+          before_build:
+            - run: docker create --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust circleci/postgres:latest 
+            - run: docker run postgres createdb git-en-boite-test
           after_build:
             - run: 
                 name: Running tests in container
-                command: docker run -e GIT_EN_BOITE_PG_URL=postgres://root@localhost/git-en-boite-test -i -t smartbear/git-en-boite:latest yarn test
+                command: docker run -e GIT_EN_BOITE_PG_URL=postgres://root@postgres/git-en-boite-test -i -t smartbear/git-en-boite:latest yarn test
           filters:
             branches:
               only: 
