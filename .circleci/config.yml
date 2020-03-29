@@ -46,12 +46,7 @@ workflows:
           after_build:
             - run: 
                 name: Running tests in container
-                command:
-                  docker run \
-                  -e GIT_EN_BOITE_PG_URL=postgres://root@localhost/git-en-boite-test \
-                  -i -t \
-                  smartbear/git-en-boite:latest \
-                  yarn test
+                command: docker run -e GIT_EN_BOITE_PG_URL=postgres://root@localhost/git-en-boite-test -i -t smartbear/git-en-boite:latest yarn test
           filters:
             branches:
               only: 
