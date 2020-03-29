@@ -44,8 +44,12 @@ workflows:
           path: packages/la-boite
           tag: latest
           before_build:
-            - run: docker network create git-en-boite
-            - run: docker run --detach --network=git-en-boite --name postgres -h postgres -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=git-en-boite-test postgres
+            - run: 
+                name: Creating container network
+                command: docker network create git-en-boite
+            - run: 
+                name: Creating postgres container ready for tests
+                command: docker run --detach --network=git-en-boite --name postgres -h postgres -e POSTGRES_HOST_AUTH_METHOD=trust -e POSTGRES_DB=git-en-boite-test postgres
           after_build:
             - run: 
                 name: Running tests in container
