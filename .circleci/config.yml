@@ -44,9 +44,8 @@ workflows:
           path: packages/la-boite
           tag: latest
           before_build:
-            - run: docker create --name postgres -e POSTGRES_HOST_AUTH_METHOD=trust circleci/postgres:latest 
-            - run: docker start postgres
-            - run: docker run postgres createdb git-en-boite-test
+            - run: docker create --name postgres -h postgres -e POSTGRES_HOST_AUTH_METHOD=trust circleci/postgres:latest 
+            - run: docker exec postgres createdb git-en-boite-test
           after_build:
             - run: 
                 name: Running tests in container
