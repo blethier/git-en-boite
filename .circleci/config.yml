@@ -61,6 +61,7 @@ workflows:
                 name: Writing .build-number file
                 command: echo $CIRCLE_BUILD_NUM > .build-number
             - run: pwd
+            - run: ls -la
           after_build:
             - run: 
                 name: Running tests in container
