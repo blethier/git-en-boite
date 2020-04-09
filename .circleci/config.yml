@@ -18,11 +18,6 @@ jobs:
       - checkout
       - node/install-packages:
           app-dir: packages/la-boite
-<<<<<<< HEAD
-          cache-key: yarn.lock
-          pkg-manager: yarn
-=======
->>>>>>> master
           with-cache: true
       - run:
           name: Compiling Typescript
@@ -30,11 +25,7 @@ jobs:
           working_directory: packages/la-boite
       - run:
           name: Linting Typescript
-<<<<<<< HEAD
-          command: yarn run lint
-=======
           command: npm run lint
->>>>>>> master
           working_directory: packages/la-boite
       - run:
           name: Running tests
