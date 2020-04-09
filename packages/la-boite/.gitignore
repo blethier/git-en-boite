@@ -1,4 +1,5 @@
 /repository
 /out
 .vscode
-package-lock.json
+git-repos
+tmp
