@@ -5,6 +5,7 @@ export default class QueuedGitRepos implements GitRepos {
   localGitRepos: GitRepos
   private queue: Queue
   private worker: Worker
+  private repos: any
 
   constructor(localGitRepos: GitRepos) {
     this.localGitRepos = localGitRepos
@@ -14,28 +15,31 @@ export default class QueuedGitRepos implements GitRepos {
       await this.localGitRepos.connectToRemote(job.data)
       console.log('done.', job.id)
     })
+    this.repos = {}
   }
 
   async connectToRemote(request: ConnectRepoRequest) {
+    // await this.worker.waitUntilReady()
+    await this.queue.waitUntilReady()
     const job = await this.queue.add('ConnectRepoRequest', request)
-    const removeListeners = () => {
-      this.worker.removeListener('failed', handleFailed)
-      this.worker.removeListener('completed', handleCompleted)
-    }
-    const handleFailed = job => {
-      console.log('failed: ', job.id)
-      removeListeners()
-    }
-    this.worker.on('failed', handleFailed)
+    this.repos[job.id] = request.repoId
+  }
 
-    const handleCompleted = job => {
-      console.log('completed', job.id)
-      removeListeners()
+  onRepoReady(repoId, handler) {
+    const handleDone = job => {
+      console.log('done', job.id)
+      if (this.repos[job.id] === repoId) handler({ repoId })
     }
-    this.worker.on('completed', handleCompleted)
+    this.worker.on('completed', handleDone)
+    this.worker.on('failed', handleDone)
   }
 
   findRepo(repoId: string) {
     return this.localGitRepos.findRepo(repoId)
+  }
+
+  async close() {
+    await this.worker.close()
+    await this.queue.close()
   }
 }

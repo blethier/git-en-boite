@@ -75,7 +75,9 @@ When('{word} connects an app to the repo', async function (userId) {
 })
 
 When('the repo has synchronised', function () {
-  // Write code here that turns the phrase above into concrete actions
+  return new Promise(resolve => {
+    this.repos.onRepoReady('a-repo-id', () => resolve())
+  })
 })
 
 Then("{word} can see that the repo's branches are:", async function (
