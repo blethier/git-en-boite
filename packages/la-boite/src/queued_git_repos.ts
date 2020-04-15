@@ -25,13 +25,12 @@ export default class QueuedGitRepos implements GitRepos {
     this.repos[job.id] = request.repoId
   }
 
-  onRepoReady(repoId, handler) {
-    const handleDone = job => {
-      console.log('done', job.id)
-      if (this.repos[job.id] === repoId) handler({ repoId })
-    }
-    this.worker.on('completed', handleDone)
-    this.worker.on('failed', handleDone)
+  waitUntilReady(repoId: string) {
+    const ifJobIsForRepo = (fn: { (): any }) => (job: any) => this.repos[job.id] === repoId && fn()
+    return new Promise((resolve, reject) => {
+      this.worker.on('completed', ifJobIsForRepo(resolve))
+      this.worker.on('failed', ifJobIsForRepo(reject))
+    })
   }
 
   findRepo(repoId: string) {
@@ -39,7 +38,10 @@ export default class QueuedGitRepos implements GitRepos {
   }
 
   async close() {
+    await this.worker.waitUntilReady()
+    await this.queue.waitUntilReady()
     await this.worker.close()
     await this.queue.close()
+    console.log('closed everything!')
   }
 }

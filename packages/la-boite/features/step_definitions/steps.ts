@@ -42,12 +42,7 @@ Given('a {word} repo {string} with branches:', async function (
   branchesTable,
 ) {
   const branches = branchesTable.raw().map((row: string[]) => row[0])
-  const repoPath = (this.repoRemoteUrl = path.resolve(
-    __dirname,
-    '../../tmp/remote',
-    providerType,
-    repoId,
-  ))
+  const repoPath = (this.repoRemoteUrl = path.resolve(this.tmpDir, 'remote', providerType, repoId))
   await exec(`mkdir -p ${repoPath}`)
   const git = async (...args: string[]) => {
     const result = await GitProcess.exec(args, repoPath)
@@ -74,10 +69,8 @@ When('{word} connects an app to the repo', async function (userId) {
   await request.post('/repos').send(repoInfo).auth(userId, token).expect(200)
 })
 
-When('the repo has synchronised', function () {
-  return new Promise(resolve => {
-    this.repos.onRepoReady('a-repo-id', () => resolve())
-  })
+When('the repo has synchronised', async function () {
+  await this.repos.waitUntilReady('a-repo-id')
 })
 
 Then("{word} can see that the repo's branches are:", async function (
