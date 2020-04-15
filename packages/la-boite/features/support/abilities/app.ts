@@ -1,4 +1,4 @@
-import { Before } from 'cucumber'
+import { Before, After } from 'cucumber'
 import { createConfig } from '../../../src/config'
 import { LocalGitRepos } from '../../../src/repos/local_git_repos'
 import childProcess from 'child_process'
@@ -11,4 +11,8 @@ Before(async function () {
   await exec(`rm -rf ${gitReposPath}`)
   await exec(`mkdir -p ${gitReposPath}`)
   this.app = { repos: new LocalGitRepos(gitReposPath) }
+})
+
+After(async function () {
+  await this.app.repos.close()
 })
