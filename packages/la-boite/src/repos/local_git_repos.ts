@@ -16,21 +16,15 @@ export class LocalGitRepos implements GitRepos {
   q: Queue.Queue<any>
   repoStatus: Map<string, RepoStatus> = new Map()
   repoJobId: Map<string, Queue.JobId> = new Map()
+  jobRepoId: Map<Queue.JobId, string> = new Map()
 
   constructor(basePath: string) {
     this.basePath = basePath
-    const git = async (...args: string[]) => {
-      const result = await GitProcess.exec(args, this.basePath)
-      if (result.exitCode > 0) throw new Error(result.stderr)
-    }
     this.q = new Queue('clone')
-    this.q.process(async job => {
-      const { repoId, remoteUrl } = job.data
-      this.repoStatus.set(repoId, RepoStatus.cloning)
-      this.repoJobId.set(repoId, job.id)
-      await git('clone', remoteUrl, repoId)
-      this.repoStatus.set(repoId, RepoStatus.ready)
-    })
+    this.q.process(__dirname + '/jobs/clone.js')
+    this.q.on('active', job => this.repoStatus.set(this.jobRepoId.get(job.id), RepoStatus.cloning))
+    this.q.on('failed', job => this.repoStatus.set(this.jobRepoId.get(job.id), RepoStatus.failed))
+    this.q.on('completed', job => this.repoStatus.set(this.jobRepoId.get(job.id), RepoStatus.ready))
   }
 
   async close() {
@@ -52,9 +46,10 @@ export class LocalGitRepos implements GitRepos {
 
   async connectToRemote(request: ConnectRepoRequest): Promise<void> {
     const { repoId, remoteUrl } = request
-    const job = await this.q.add({ remoteUrl, repoId })
+    const job = await this.q.add({ remoteUrl, repoId, basePath: this.basePath })
     this.repoStatus.set(repoId, RepoStatus.cloning)
     this.repoJobId.set(repoId, job.id)
+    this.jobRepoId.set(job.id, repoId)
   }
 
   findRepo(repoId: string): GitRepo {
