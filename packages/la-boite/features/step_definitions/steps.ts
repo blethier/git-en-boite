@@ -74,8 +74,8 @@ When('{word} connects an app to the repo', async function (userId) {
   await request.post('/repos').send(repoInfo).auth(userId, token).expect(200)
 })
 
-When('the repo has synchronised', function () {
-  // Write code here that turns the phrase above into concrete actions
+When('the repo has synchronised', async function () {
+  await this.app.repos.waitUntilRepoCloned('a-repo-id')
 })
 
 Then("{word} can see that the repo's branches are:", async function (
