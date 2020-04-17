@@ -2,7 +2,6 @@ import path from 'path'
 import { GitRepos, ConnectRepoRequest } from './git_repos'
 import { GitRepo } from './git_repo'
 import { LocalGitRepo } from './local_git_repo'
-import { GitProcess } from 'dugite'
 import Queue = require('bull')
 
 enum RepoStatus {
