@@ -62,12 +62,12 @@ workflows:
                 - ci
 
       - build-tagged-docker-images:
-        executor: docker/publish
-        image: blethier/git-en-boite
-        path: packages/la-boite
-        filters:
-          branches:
-            only:
-              - master
-          tags:
-            only: /^v.*/
+          executor: docker/publish
+          image: blethier/git-en-boite
+          path: packages/la-boite
+          filters:
+            branches:
+              only:
+                - master
+            tags:
+              only: /^v.*/
